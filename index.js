@@ -21,6 +21,8 @@ const getPrTitle = async (client) => {
     pull_number: prNumber
   });
 
+  console.log(pullRequest)
+
   return pullRequest.title
 }
 
@@ -32,9 +34,9 @@ async function run() {
 
     const client = github.getOctokit(token)
 
-    const prName = await getPrTitle(client)
+    const prTitle = await getPrTitle(client)
 
-    if (!prName.match(regex)) {
+    if (!prTitle.match(regex)) {
       core.setFailed(errorMessage);
     }
   } catch (error) {
