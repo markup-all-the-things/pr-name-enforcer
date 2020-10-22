@@ -1,13 +1,19 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
-inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+name: 'Pull Request Name Enforcer'
+description: 'github action for enforcing regex matching name on PR'
+branding:
+  icon: 'book-open'  
+  color: 'yellow'
+inputs: 
+  repo-token:
+    description: 'The GITHUB_TOKEN secret'
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  regex:
+    description: 'The regex'
+    required: true
+  regex-flags:
+    description: 'Optional regex flags'
+    required: false
+    
 runs:
   using: 'node12'
   main: 'dist/index.js'

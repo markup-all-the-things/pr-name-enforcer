@@ -1,18 +1,42 @@
 const core = require('@actions/core');
-const wait = require('./wait');
+const github = require('@actions/github');
 
+const getPrNumber = () => {
+  const pullRequest = github.context.payload.pull_request;
+  if (!pullRequest) {
+    return undefined;
+  }
+  return pullRequest.number;
+}
 
-// most @actions toolkit packages have async methods
+const getPrName = async (client) => {
+  const prNumber = getPrNumber();
+  if (!prNumber) {
+    core.error("Could not get pull request number from context, exiting");
+    return;
+  }
+  const { data: pullRequest } = await client.pulls.get({
+    owner: github.context.repo.owner,
+    repo: github.context.repo.repo,
+    pull_number: prNumber
+  });
+
+  return pullRequest.name
+}
+
 async function run() {
   try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+    const token = core.getInput("repo-token", { required: true });
+    const regex = new RegExp(core.getInput("regex", { required: true }), core.getInput("regex-flags", { required: false }))
+    const errorMessage = core.getInput("error-message", { required: false }) || `PR name does not match provided regex: ${regex}`
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+    const client = github.getOctokit(token)
 
-    core.setOutput('time', new Date().toTimeString());
+    const prName = await getPrName(client)
+
+    if (!prName.match(regex)) {
+      core.setFailed(errorMessage);
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
