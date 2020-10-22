@@ -21,7 +21,7 @@ const getPrTitle = async (client) => {
     pull_number: prNumber
   });
 
-  console.log(pullRequest)
+  core.setFailed(pullRequest);
 
   return pullRequest.title
 }
