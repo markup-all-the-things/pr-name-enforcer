@@ -16,7 +16,7 @@ const getPrNumber = () => {
   return pullRequest.number;
 }
 
-const getPrName = async (client) => {
+const getPrTitle = async (client) => {
   const prNumber = getPrNumber();
   if (!prNumber) {
     core.error("Could not get pull request number from context, exiting");
@@ -28,7 +28,9 @@ const getPrName = async (client) => {
     pull_number: prNumber
   });
 
-  return pullRequest.name
+  core.setFailed(pullRequest);
+
+  return pullRequest.title
 }
 
 async function run() {
@@ -39,9 +41,9 @@ async function run() {
 
     const client = github.getOctokit(token)
 
-    const prName = await getPrName(client)
+    const prTitle = await getPrTitle(client)
 
-    if (!prName.match(regex)) {
+    if (!prTitle.match(regex)) {
       core.setFailed(errorMessage);
     }
   } catch (error) {
