@@ -13,6 +13,9 @@ inputs:
   regex-flags:
     description: 'Optional regex flags'
     required: false
+  error-message:
+    description: 'Optional error message when match failed'
+    required: false
     
 runs:
   using: 'node12'
